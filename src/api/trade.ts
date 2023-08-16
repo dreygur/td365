@@ -11,7 +11,10 @@ export async function getOpenPositionDetails(
   allTrades: AllEvents
 ) {
   try {
-    let { d: { openPosition: { Direction, MarketName, OpenPrice }, closeOrder } } = await request(`/GetOpenPositionWithOrder?AccountID=${AccountID}`, cookie, { positionID });
+    let { d: {
+      openPosition: { Direction, MarketName, OpenPrice }
+    }
+    } = await request(`/GetOpenPosition?AccountID=${AccountID}`, cookie, { positionID });
     const tradeMode = Direction.toLowerCase() === 'buy';
     const [price, key] = tradeMode
       ? [allTrades[quoteID].sellPrice, allTrades[quoteID].token]
@@ -22,9 +25,37 @@ export async function getOpenPositionDetails(
       marketName: MarketName,
       openPrice: OpenPrice
     };
-
-    if (closeOrder) response = Object.assign(response, closeOrder.OrderID);
     return response;
+  } catch (error) { throw error; }
+}
+
+export async function getOpenPositionWithOrder(
+  AccountID: string | number,
+  cookie: string,
+  positionID: string | number,
+  quoteID: string | number,
+  orderID: string | number,
+  allTrades: AllEvents
+) {
+  try {
+    let {
+      d: {
+        openPosition: { Direction, MarketName, OpenPrice },
+        closeOrder: { LimitOrderPrice, OrderID }
+      }
+    } = await request(`/GetOpenPositionWithOrder?AccountID=${AccountID}`, cookie, { positionID, orderID });
+    const tradeMode = Direction.toLowerCase() === 'buy';
+    const [price, key] = tradeMode
+      ? [allTrades[quoteID].sellPrice, allTrades[quoteID].token]
+      : [allTrades[quoteID].buyPrice, allTrades[quoteID].token];
+
+    return {
+      tradeMode, price, key,
+      marketName: MarketName,
+      openPrice: OpenPrice,
+      OrderID,
+      LimitOrderPrice
+    };
   } catch (error) { throw error; }
 }
 
@@ -59,28 +90,21 @@ export async function amend(
   accountID: string | number,
   allTrades: AllEvents,
   isGuaranteed: boolean = false,
+  orderID: string | number
 ) {
   try {
-    const { tradeMode, price, key } = await getOpenPositionDetails(accountID, cookie, positionID, quoteID, allTrades);
+    const { tradeMode, price, key } = await getOpenPositionWithOrder(accountID, cookie, positionID, quoteID, orderID, allTrades);
 
     const orderObject = {
-      orderModeID
+      orderModeID: {
+        limit: 1,
+        stop: 2,
+        trailing: 2,
+        stopLimit: 3
+      },
+
     };
-    let orderModeID: number;
-    switch (orderType) {
-      case 'limit':
-        orderModeID = 1;
-        break;
-      case 'stop' || 'trailing':
-        orderModeID = 2;
-        break;
-      case 'stopLimit':
-        orderModeID = 3;
-        break;
-      default:
-        orderModeID = 2;
-        break;
-    }
+
 
     return request('AmendCloseOrder', cookie, {
       key,
@@ -88,9 +112,9 @@ export async function amend(
       quoteID,
       tradeMode,
       positionID,
-      orderModeID,
       orderStake,
       isGuaranteed,
+      orderModeID: orderObject.orderModeID[orderType],
       marketID: 17068,
       orderTypeID: 2,
       userAgent: "Chrome (115.0.0.0)",
@@ -99,22 +123,35 @@ export async function amend(
 
     /* Stop
     {
-      "orderPriceModeID": 2,
-      "limitOrderPrice": 0,
-      "stopOrderPrice": "15759.9", -
-      "trailingPoint": 0,
-      "closePositionID": 23149454
+        "marketID": 17068,
+        "quoteID": 6374,
+        "tradeMode": true,
+        "orderStake": "5",
+        "isGuaranteed": false,
+        "orderModeID": 2,
+        "orderTypeID": 2,
+        "orderPriceModeID": 2,
+        "limitOrderPrice": 0,
+        "stopOrderPrice": "15720.4",
+        "trailingPoint": 0,
+        "closePositionID": 23150238
     }
     */
 
     /* Trailing
     {
-      "market": "Germany 40 - Rolling Cash",
-      "orderID": "22835524",
-      "limitOrderPrice": 0,
-      "stopOrderPrice": "15761.9", +
-      "trailingPoint": 1,
-      "isGuaranteed": false
+        "marketID": 17068,
+        "quoteID": 6374,
+        "tradeMode": true,
+        "orderStake": "5",
+        "isGuaranteed": false,
+        "orderModeID": 2,
+        "orderTypeID": 2,
+        "orderPriceModeID": 2,
+        "limitOrderPrice": 0,
+        "stopOrderPrice": "15719.9",
+        "trailingPoint": 1,
+        "closePositionID": 23150220
     }
     */
 

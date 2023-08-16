@@ -41,6 +41,7 @@ export type TradeObj = {
   marketID?: string | number;
   orderModeID?: number;
   orderTypeID?: number;
+  orderID?: number | string;
   orderPriceModeID?: number;
   limitOrderPrice?: number;
   stopOrderPrice?: number | string;
