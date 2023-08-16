@@ -36,3 +36,26 @@ export type PriceData = {
   Result?: boolean;
   sp?: string[];
 };
+
+export type TradeObj = {
+  orderModeID: number;
+  orderTypeID: number;
+  orderPriceModeID: number;
+  limitOrderPrice: number;
+  stopOrderPrice: number;
+  trailingPoint: number;
+  closePositionID: number;
+  marketId: string | number;
+  quoteID: string | number;
+  stake: string | number;
+  tradeType: string | number;
+  tradeMode: boolean;
+  hasClosingOrder: boolean;
+  isGuaranteed: boolean;
+  isKaazingFeed: boolean;
+
+  // To be Added Later in api logic
+  userAgent?: string;
+  price?: string | number;
+  key?: string;
+};
