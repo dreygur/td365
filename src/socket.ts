@@ -7,7 +7,8 @@ export default function startListening(
   auth: Auth,
   subscriptions: SubscriptionItem[],
   allEvents: AllEvents,
-  callback: (allEvents: AllEvents, data: ResponseEvent) => void): void {
+  callback: (allEvents: AllEvents, data: ResponseEvent, func: () => void) => void): void {
+  const subscribe = () => subscriptions.forEach(subscription => ws.send(JSON.stringify(subscription)));
   // On Error
   ws.on('error', console.error);
 
@@ -17,11 +18,13 @@ export default function startListening(
     ws.send(JSON.stringify(auth));
 
     // Subscribe
-    subscriptions.forEach(subscription => ws.send(JSON.stringify(subscription)));
+    subscribe()
   });
 
   // On Event/Response
   ws.on('message', function message(data) {
-    callback(allEvents, JSON.parse(data.toString()));
+    const event: ResponseEvent = JSON.parse(data.toString());
+    if (event.t === 'heartbeat') ws.send(JSON.stringify(event.d));
+    else callback(allEvents, event, subscribe);
   });
 }

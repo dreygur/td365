@@ -38,23 +38,25 @@ export type PriceData = {
 };
 
 export type TradeObj = {
-  orderModeID: number;
-  orderTypeID: number;
-  orderPriceModeID: number;
-  limitOrderPrice: number;
-  stopOrderPrice: number;
-  trailingPoint: number;
-  closePositionID: number;
-  marketId: string | number;
-  quoteID: string | number;
-  stake: string | number;
-  tradeType: string | number;
-  tradeMode: boolean;
-  hasClosingOrder: boolean;
-  isGuaranteed: boolean;
-  isKaazingFeed: boolean;
+  marketID?: string | number;
+  orderModeID?: number;
+  orderTypeID?: number;
+  orderPriceModeID?: number;
+  limitOrderPrice?: number;
+  stopOrderPrice?: number | string;
+  trailingPoint?: number;
+  orderStake?: number | string;
+  positionID?: string | number;
+  closePositionID?: number;
+  stake?: string | number;
+  tradeType?: string | number;
+  tradeMode?: boolean;
+  hasClosingOrder?: boolean;
+  isGuaranteed?: boolean;
+  isKaazingFeed?: boolean;
 
   // To be Added Later in api logic
+  quoteID?: string | number;
   userAgent?: string;
   price?: string | number;
   key?: string;
