@@ -1,74 +1,28 @@
-import { AllEvents } from "../types";
+import { AllEvents, TradeObj } from "../types";
 import request from "../utils/request";
+import { getOpenPositionDetails, getOpenPositionWithOrder } from "./utils";
 
-const cookie = 'UDPHHMSF=yqKJzyDBNxmEonrLlwCv1Ccz9xRymwUeFTmeUxXqtdeKLvwZDB9e4lW6w2P9JzvgSwBqV0yjZsEeeFxu; UDPHHMSF_exp=2023-08-21T16:40:32.849Z; _ga=GA1.1.1387548407.1692031234; ASP.NET_SessionId=ctrp0g1wnpd5do5sfkbdig3r; NYONGGFW=cSEoK5uZdaurA4xy6bYML/IMrXmEMB2h7+x5eNifebuu8PbCJxEONKbwgbqgRnFthoSXHuXg+Akk0fX6; NYONGGFW_exp=2023-08-23T14:51:16.946Z; _ga_L14D3Z3R57=GS1.1.1692197480.2.1.1692197483.57.0.0; SL_C_23361dd035530_SID={"5ee9ad8176f9dc32888f51354fe66a134c7ebe56":{"sessionId":"UDkR1tz5KsZSIzvPywsmO","visitorId":"AkXVxEah3KeUNOW-iBkGf"}}; AWSALB=bXSvCrJenmAPVSzt4t6OyWdaWsQaLEL4nCNc6Kbro6XeOr5XWQr6cNNOl/gxkBT9a1qvtDUiuFlaSlj0l12LPsPI8wytmmjguwMkqBmM4BL2QHK++sP1gGBnoaRV; AWSALBCORS=bXSvCrJenmAPVSzt4t6OyWdaWsQaLEL4nCNc6Kbro6XeOr5XWQr6cNNOl/gxkBT9a1qvtDUiuFlaSlj0l12LPsPI8wytmmjguwMkqBmM4BL2QHK++sP1gGBnoaRV';
-
-export async function getOpenPositionDetails(
-  AccountID: string | number,
-  cookie: string,
-  positionID: string | number,
-  quoteID: string | number,
-  allTrades: AllEvents
-) {
-  try {
-    let { d: {
-      openPosition: { Direction, MarketName, OpenPrice }
-    }
-    } = await request(`/GetOpenPosition?AccountID=${AccountID}`, cookie, { positionID });
-    const tradeMode = Direction.toLowerCase() === 'buy';
-    const [price, key] = tradeMode
-      ? [allTrades[quoteID].sellPrice, allTrades[quoteID].token]
-      : [allTrades[quoteID].buyPrice, allTrades[quoteID].token];
-
-    let response = {
-      tradeMode, price, key,
-      marketName: MarketName,
-      openPrice: OpenPrice
-    };
-    return response;
-  } catch (error) { throw error; }
-}
-
-export async function getOpenPositionWithOrder(
-  AccountID: string | number,
-  cookie: string,
-  positionID: string | number,
-  quoteID: string | number,
-  orderID: string | number,
-  allTrades: AllEvents
-) {
-  try {
-    let {
-      d: {
-        openPosition: { Direction, MarketName, OpenPrice },
-        closeOrder: { LimitOrderPrice, OrderID }
-      }
-    } = await request(`/GetOpenPositionWithOrder?AccountID=${AccountID}`, cookie, { positionID, orderID });
-    const tradeMode = Direction.toLowerCase() === 'buy';
-    const [price, key] = tradeMode
-      ? [allTrades[quoteID].sellPrice, allTrades[quoteID].token]
-      : [allTrades[quoteID].buyPrice, allTrades[quoteID].token];
-
-    return {
-      tradeMode, price, key,
-      marketName: MarketName,
-      openPrice: OpenPrice,
-      OrderID,
-      LimitOrderPrice
-    };
-  } catch (error) { throw error; }
-}
-
+/**
+ * Exit Position
+ * @param stake Amount of trade
+ * @param quoteID Quote ID or Item ID
+ * @param positionID Position ID of the traget order
+ * @param AccountID Account ID of the trader
+ * @param allTrades Websocket Event state
+ * @returns
+ */
 export async function closePosition(
+  cookie: string,
   stake: string | number = 1,
   quoteID: string | number, // Item ID
   positionID: string | number,
-  AccountID: string | number,
+  accountID: string | number,
   allTrades: AllEvents,
+  orderObj?: TradeObj,
 ) {
   try {
-    const { tradeMode, price, key } = await getOpenPositionDetails(AccountID, cookie, positionID, quoteID, allTrades);
-    return request('InsertClosePosition', cookie, {
+    const { tradeMode, price, key } = await getOpenPositionDetails(cookie, accountID, positionID, quoteID, allTrades);
+    const defaultOrderObj: TradeObj = {
       key,
       stake,
       price,
@@ -78,23 +32,64 @@ export async function closePosition(
       marketID: 17068,
       isKaazingFeed: true,
       userAgent: "Chrome (115.0.0.0)",
-    });
+    }
+    return request('InsertClosePosition', cookie, Object.assign(defaultOrderObj, orderObj));
   } catch (err) { throw err; }
 }
 
+/**
+ * Closes the Order
+ * @param quoteID Quote ID or Item ID
+ * @param closePositionID Position ID
+ * @param orderobj Order object
+ * @returns
+ */
+export async function closeOrder(
+  cookie: string,
+  quoteID: string | number, // Item ID
+  closePositionID: string | number,
+  orderobj: TradeObj
+): Promise<any> {
+  try {
+    const defaultObj = {
+      quoteID,
+      closePositionID,
+      marketID: 17068,
+      orderTypeID: 2,
+      orderPriceModeID: 2,
+      userAgent: "Chrome (115.0.0.0)",
+    };
+
+    return request('InsertCloseOrder', cookie, Object.assign(orderobj, defaultObj));
+  } catch (err) { throw err; }
+}
+
+/**
+ * Ammend an order
+ * @param orderType Type of order
+ * @param orderStake Amount of stake
+ * @param quoteID Quote ID or Item ID
+ * @param closePositionID Postion ID to Close Order
+ * @param accountID Account ID
+ * @param allTrades Events state
+ * @param limitStake Amount of stake for limit
+ * @param orderObj Order object
+ * @param orderID Order ID
+ * @returns
+ */
 export async function amend(
+  cookie: string,
   orderType: 'stop' | 'trailing' | 'limit' | 'stopLimit' = 'stop',
   orderStake: string | number = 1,
   quoteID: string | number, // Item ID
-  positionID: string | number,
+  closePositionID: string | number,
   accountID: string | number,
   allTrades: AllEvents,
-  isGuaranteed: boolean = false,
-  orderID: string | number
-) {
+  limitStake?: number | string,
+  orderObj?: TradeObj,
+  orderID?: string | number,
+): Promise<any> {
   try {
-    const { tradeMode, price, key } = await getOpenPositionWithOrder(accountID, cookie, positionID, quoteID, orderID, allTrades);
-
     const orderObject = {
       orderModeID: {
         limit: 1,
@@ -102,93 +97,76 @@ export async function amend(
         trailing: 2,
         stopLimit: 3
       },
+    };
+
+    if (!orderID) {
+      const { tradeMode, price } = await getOpenPositionDetails(cookie, accountID, closePositionID, quoteID, allTrades);
+      if (orderType === 'stopLimit' && !limitStake) throw new Error('limitStake is required for stopLimit');
+      const defaultOrderObj: TradeObj = {
+        orderStake, quoteID, tradeMode,
+        isGuaranteed: false,
+        orderModeID: orderObject.orderModeID[orderType],
+        limitOrderPrice: ['stop', 'trailing'].includes(orderType)
+          ? 0 : orderType === 'limit'
+            ? Number(price) + Number(orderStake)
+            : orderType === 'stopLimit'
+              ? Number(price) + Number(limitStake)
+              : Number(price) - Number(orderStake),
+        stopOrderPrice: orderType === 'limit' ? 0 : Number(price) - Number(orderStake),
+        trailingPoint: orderType == 'trailing' ? 1 : 0,
+      }
+      return closeOrder(cookie, quoteID, closePositionID, Object.assign(defaultOrderObj, orderObj));
+    }
+
+    const {
+      marketName,
+      openPrice,
+      OrderID,
+      LimitOrderPrice
+    } = await getOpenPositionWithOrder(accountID, cookie, closePositionID, quoteID, orderID, allTrades);
+    if (orderType === 'stopLimit' && !limitStake) throw new Error('limitStake is required for stopLimit');
+    const defaultOrderObj: TradeObj = {
+      orderStake,
+      isGuaranteed: false,
+      orderModeID: orderObject.orderModeID[orderType],
+      limitOrderPrice: ['stop', 'trailing'].includes(orderType)
+        ? 0 : orderType === 'limit'
+          ? Number(openPrice) + Number(orderStake)
+          : orderType === 'stopLimit'
+            ? Number(openPrice) + Number(limitStake)
+            : Number(openPrice) - Number(orderStake),
+      stopOrderPrice: orderType === 'limit' ? 0 : Number(openPrice) - Number(orderStake),
+      trailingPoint: orderType == 'trailing' ? 1 : 0,
+      orderID: OrderID,
+      market: marketName,
+      orderTypeID: 2,
+      orderPriceModeID: 2,
 
     };
 
-
-    return request('AmendCloseOrder', cookie, {
-      key,
-      price,
-      quoteID,
-      tradeMode,
-      positionID,
-      orderStake,
-      isGuaranteed,
-      orderModeID: orderObject.orderModeID[orderType],
-      marketID: 17068,
-      orderTypeID: 2,
-      userAgent: "Chrome (115.0.0.0)",
-      stopOrderPrice: "15759.9",
-    });
-
-    /* Stop
-    {
-        "marketID": 17068,
-        "quoteID": 6374,
-        "tradeMode": true,
-        "orderStake": "5",
-        "isGuaranteed": false,
-        "orderModeID": 2,
-        "orderTypeID": 2,
-        "orderPriceModeID": 2,
-        "limitOrderPrice": 0,
-        "stopOrderPrice": "15720.4",
-        "trailingPoint": 0,
-        "closePositionID": 23150238
-    }
-    */
-
-    /* Trailing
-    {
-        "marketID": 17068,
-        "quoteID": 6374,
-        "tradeMode": true,
-        "orderStake": "5",
-        "isGuaranteed": false,
-        "orderModeID": 2,
-        "orderTypeID": 2,
-        "orderPriceModeID": 2,
-        "limitOrderPrice": 0,
-        "stopOrderPrice": "15719.9",
-        "trailingPoint": 1,
-        "closePositionID": 23150220
-    }
-    */
-
-    /* Limit
-    {
-      "market": "Germany 40 - Rolling Cash",
-      "orderID": 22835524,
-      "limitOrderPrice": "15779.9",
-      "stopOrderPrice": 0,
-      "trailingPoint": 0,
-      "isGuaranteed": false
-    }
-    */
-
-    /* Stop-Limit
-    {
-      "market": "Germany 40 - Rolling Cash",
-      "orderID": 22835524,
-      "limitOrderPrice": "15779.9",
-      "stopOrderPrice": "14782.9",
-      "trailingPoint": 0,
-      "isGuaranteed": false
-  }
-    */
-
-
+    return request('AmendCloseOrder', cookie, Object.assign(defaultOrderObj, orderObj));
   } catch (err) { throw err; }
 }
 
+/**
+ *
+ * @param tradeMode Mode of trade
+ * @param stake Amount of stake
+ * @param quoteID Quote ID or Item ID
+ * @param allTrades Trade events state
+ * @param orderObj Order object
+ * @returns
+ */
 export async function trade(
+  cookie: string,
   tradeMode: 'buy' | 'sell' = 'buy',
   stake: string | number = 1,
   quoteID: string | number, // Item ID
   allTrades: AllEvents,
-) {
+  orderObj?: TradeObj,
+): Promise<any> {
   const price = allTrades[quoteID][`${tradeMode}Price`];
-  return request('RequestTrade', cookie, {
+  const defaultOrderObj: TradeObj = {
     stake,
     quoteID,
     price,
@@ -207,5 +185,6 @@ export async function trade(
     closePositionID: 0,
     isKaazingFeed: true,
     userAgent: "Chrome (115.0.0.0)",
-  });
+  };
+  return request('RequestTrade', cookie, Object.assign(defaultOrderObj, orderObj));
 }

@@ -3,10 +3,14 @@ import { TradeObj } from "../types";
 
 const BASE_URL: string = 'https://demo.tradedirect365.com'
 
-export default async function request(path: string, cookie: string, data: TradeObj) {
+export default async function request(path: string, cookie: string, reqBody: TradeObj) {
   try {
-    const response = await axios(BASE_URL + '/UTSAPI.asmx/' + path, {
-      data,
+    const defaultBody: TradeObj = {
+      userAgent: "Chrome (115.0.0.0)"
+    };
+
+    const { data } = await axios(BASE_URL + '/UTSAPI.asmx/' + path, {
+      data: Object.assign(reqBody),
       method: 'POST',
       headers: {
         cookie,
@@ -29,7 +33,7 @@ export default async function request(path: string, cookie: string, data: TradeO
       },
     });
 
-    return response.data;
+    return data;
   } catch (err) {
     throw err;
   }

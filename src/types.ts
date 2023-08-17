@@ -38,6 +38,7 @@ export type PriceData = {
 };
 
 export type TradeObj = {
+  market?: string;
   marketID?: string | number;
   orderModeID?: number;
   orderTypeID?: number;
