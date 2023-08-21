@@ -1,6 +1,6 @@
 {
   "name": "@dreygur/td365",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "A wraper for tradedirect365.com",
   "main": "lib/index.js",
   "repository": "https://github.com/dreygur/td365",
@@ -14,7 +14,8 @@
     "start": "node dist/index.js",
     "dev": "nodemon src/index.ts",
     "compile": "tsc",
-    "build": "esbuild --bundle src/index.ts --outdir=dist --platform=node --target=es2020"
+    "build": "esbuild --bundle src/index.ts --outdir=dist --platform=node --target=es2020",
+    "prepare": "tsc"
   },
   "devDependencies": {
     "@types/express": "^4.17.17",
