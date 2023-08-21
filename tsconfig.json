@@ -1,15 +1,15 @@
 {
   "compilerOptions": {
     "target": "es2020",
-    "module": "commonjs",
+    "module": "NodeNext",
     "allowJs": false,
-    "declaration": false,
-    "sourceMap": true,
+    "declaration": true,
+    "sourceMap": false,
     "rootDirs": [
       "src",
       "tests"
     ],
-    "outDir": "dist",
+    "outDir": "lib",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
@@ -22,7 +22,6 @@
     ]
   },
   "include": [
-    "./src/**/*",
-    "example.ts"
+    "./src/**/*"
   ]
 }

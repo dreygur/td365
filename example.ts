@@ -1,8 +1,8 @@
 import express from 'express';
 import { handleEvent } from "./src/handlers";
-import startListening from "./src/socket";
+import { startListening } from "./src/socket";
 import { AllEvents, Auth, SubscriptionItem } from "./src/types";
-import Trade from './src/api';
+import { Trade } from './src/api';
 
 const auth: Auth = {
   "action": "authentication",

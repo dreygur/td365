@@ -1,8 +1,8 @@
 {
-  "name": "td365",
+  "name": "@dreygur/td365",
   "version": "1.0.0",
   "description": "A wraper for tradedirect365.com",
-  "main": "dist/index.js",
+  "main": "lib/index.js",
   "repository": "https://github.com/dreygur/td365",
   "author": {
     "name": "Rakibul Yeasin",
@@ -11,11 +11,10 @@
   },
   "license": "MIT",
   "scripts": {
-    "start": "DEBUG='telegraf:*' node dist/index.js",
+    "start": "node dist/index.js",
     "dev": "nodemon src/index.ts",
     "compile": "tsc",
-    "build": "esbuild --bundle src/index.ts --outdir=dist --platform=node --target=es2020",
-    "chrome": "nodemon src/dextools/scraper/index.ts"
+    "build": "esbuild --bundle src/index.ts --outdir=dist --platform=node --target=es2020"
   },
   "devDependencies": {
     "@types/express": "^4.17.17",

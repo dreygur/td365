@@ -2,7 +2,7 @@ import { AllEvents, TradeObj } from '../types';
 import * as trade from './trade';
 export * from './utils';
 
-export default class Trade {
+export class Trade {
   private _token: string;
   constructor(token: string) {
     this._token = token;

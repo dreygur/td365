@@ -3,7 +3,7 @@ import { AllEvents, Auth, ResponseEvent, SubscriptionItem } from './types';
 
 const ws = new WebSocket('wss://demo-api.finsa.com.au');
 
-export default function startListening(
+export function startListening(
   auth: Auth,
   subscriptions: SubscriptionItem[],
   allEvents: AllEvents,
