@@ -10,7 +10,7 @@ const auth: Auth = {
   "tradingAccountType": "SPREAD",
   "token": "cSEoK5uZdaurA4xy6bYML/IMrXmEMB2h7+x5eNifebuu8PbCJxEONKbwgbqgRnFthoSXHuXg+Akk0fX6"
 };
-const cookie = 'ASP.NET_SessionId=4essmxfsj4e05i4opfk2rcqf; PQMFIHXS=cSEoK5uZdaurA4xy6bYML/IMrXmEMB2h7+x5eNifebuu8PbCJxEONKbwgbqgRnFthoSXHuXg+Akk0fX6; PQMFIHXS_exp=2023-08-24T05:18:47.911Z; AWSALB=tEyYYkV7Gt5fBbugSRseRkm6I5tIO/bQ63i/LbqFUBe1UDxJW9EUxas0ODxiGXdS2SwJb0VvDJ9KqET5CJlgh+uNpDvEwrMwz+likjE7oQSlXKPUI1OC2W+rBuCs; AWSALBCORS=tEyYYkV7Gt5fBbugSRseRkm6I5tIO/bQ63i/LbqFUBe1UDxJW9EUxas0ODxiGXdS2SwJb0VvDJ9KqET5CJlgh+uNpDvEwrMwz+likjE7oQSlXKPUI1OC2W+rBuCs';
+const cookie = 'EWTEMAJM=ecIEQ/Ow07aAundsJ762KRkNrMoc+MC/rRne6zTw06xQ/GN+WumhGVSJBfzExv9WVlZSm7PfO75EJskn; EWTEMAJM_exp=2023-08-23T10:32:19.542Z; ASP.NET_SessionId=tfoo0lgexvhpbumabjkosqcp; JRLJPMAN=/01aUOf/PeDBTdpbCfdeEXJqDdrCYei9HoHHvtJYDnpDgiEUsTjk4vEMvuXiVIq3xrOrwTOlgiBgpTfO; JRLJPMAN_exp=2023-08-29T05:15:50.429Z; AWSALB=8UdLX1ver2WY3GKmYDrlRDAyPJ6KPV1VY7oIRGaJLQ9WzCXHq+d21sDVUz9u4oE6L3387xaerGbBclKtfon8zCQTuZIEr4+v2+BmV+UAYIFihzo6E2zCSojBl5Le; AWSALBCORS=8UdLX1ver2WY3GKmYDrlRDAyPJ6KPV1VY7oIRGaJLQ9WzCXHq+d21sDVUz9u4oE6L3387xaerGbBclKtfon8zCQTuZIEr4+v2+BmV+UAYIFihzo6E2zCSojBl5Le';
 
 const subscriptions: SubscriptionItem[] = [];
 [6374, 5945, 6647, 6647, 16917, 872703].forEach(id => subscriptions.push({ quoteId: id, priceGrouping: "Sampled", action: "subscribe" }));
@@ -30,6 +30,25 @@ app.get('/', async (req, res) => {
     let response;
     if (side === 'buy') response = await api.trade('buy', Number(amount), 6374, allEvents);
     else response = await api.trade('sell', Number(amount), 6374, allEvents);
+
+    console.log(response);
+
+    return res.status(200).json(response);
+  } catch (err: any) {
+    console.log(err.message);
+    return res.status(500).send({ message: 'Error' });
+  }
+});
+
+
+app.get('/trade', async (req, res) => {
+  const { side, amount, orderType, orderStake, limitStake } = req.query;
+
+  if (!allEvents[6374]) return res.status(200).send({ message: 'No events' });
+  try {
+    let response;
+    if (side === 'buy') response = await api.tradeExtra('buy', 'stop', Number(amount), 6374, allEvents, {}, Number(orderStake), Number(limitStake));
+    else response = await api.tradeExtra('sell', 'stop', Number(amount), 6374, allEvents, {}, Number(orderStake), Number(limitStake));
 
     console.log(response);
 

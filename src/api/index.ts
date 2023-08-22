@@ -27,6 +27,19 @@ export class Trade {
     return trade.trade(this._token, tradeMode, stake, quoteID, allTrades, orderObj);
   }
 
+  async tradeExtra(
+    tradeMode: 'buy' | 'sell' = 'buy',
+    orderType: 'stop' | 'trailing' | 'limit' | 'stopLimit' = 'stop',
+    stake: string | number = 1,
+    quoteID: string | number, // Item ID
+    allTrades: AllEvents,
+    orderObj?: TradeObj,
+    orderStake?: string | number,
+    limitStake?: string | number
+  ): Promise<any> {
+    return trade.tradeExtra(this._token, tradeMode, orderType, stake, quoteID, allTrades, orderObj, orderStake, limitStake)
+  }
+
   /**
    * Exit Position
    * @param stake Amount of trade
