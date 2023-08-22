@@ -87,6 +87,7 @@ export async function amend(
   allTrades: AllEvents,
   limitStake?: number | string,
   orderObj?: TradeObj,
+  stopTrailingStake?: number | string,
   orderID?: string | number,
 ): Promise<any> {
   try {
@@ -112,7 +113,7 @@ export async function amend(
             : orderType === 'stopLimit'
               ? Number(price) + Number(limitStake)
               : Number(price) - Number(orderStake),
-        stopOrderPrice: orderType === 'limit' ? 0 : Number(price) - Number(orderStake),
+        stopOrderPrice: orderType === 'limit' ? 0 : Number(price) - Number(stopTrailingStake),
         trailingPoint: orderType == 'trailing' ? 1 : 0,
       }
       return closeOrder(cookie, quoteID, closePositionID, Object.assign(defaultOrderObj, orderObj));
