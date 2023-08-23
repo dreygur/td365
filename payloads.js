@@ -1,0 +1,20 @@
+{
+  "marketID": 17068,
+    "quoteID": 6374,
+      "price": 15658,
+        "stake": "1",
+          "tradeType": 1,
+            "tradeMode": false,
+              "hasClosingOrder": true,
+                "isGuaranteed": false,
+                  "orderModeID": 3,
+                    "orderTypeID": 2,
+                      "orderPriceModeID": 2,
+                        "limitOrderPrice": "15663.0",
+                          "stopOrderPrice": "15650.0",
+                            "trailingPoint": 0,
+                              "closePositionID": 0,
+                                "isKaazingFeed": true,
+                                  "userAgent": "Chrome (115.0.0.0)",
+                                    "key": "toSDwsPf7lMhMpNgq+oNLjetp9B1skVJkklKD0rZn+Q="
+}
