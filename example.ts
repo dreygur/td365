@@ -93,7 +93,7 @@ app.post('/ammend', async (req, res) => {
 });
 
 async function main(): Promise<void> {
-  startListening(auth, subscriptions, allEvents, handleEvent);
+  startListening(auth, subscriptions, allEvents, handleEvent, () => { });
 }
 
 // Entry point
