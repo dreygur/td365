@@ -1,7 +1,6 @@
 import WebSocket from 'ws';
 import { AllEvents, Auth, ResponseEvent, SubscriptionItem } from './types';
 
-const ws = new WebSocket('wss://demo-api.finsa.com.au');
 
 export function startListening(
   auth: Auth,
@@ -10,6 +9,7 @@ export function startListening(
   callback: (allEvents: AllEvents, data: ResponseEvent, func: () => void) => void,
   secondCallBack: () => void
 ): void {
+  const ws = new WebSocket('wss://demo-api.finsa.com.au');
 
   const subscribe = () => subscriptions.forEach(subscription => ws.send(JSON.stringify(subscription)));
   // On Error
