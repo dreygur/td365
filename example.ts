@@ -6,14 +6,14 @@ import { Trade } from './src/api';
 
 const auth: Auth = {
   "action": "authentication",
-  "loginId": "TD365_TN_CUBE6044310PROD_74E_demo",
+  "loginId": "TD365_TN_CUBE6046527PROD_XkK_demo",
   "tradingAccountType": "SPREAD",
-  "token": "cSEoK5uZdaurA4xy6bYML/IMrXmEMB2h7+x5eNifebuu8PbCJxEONKbwgbqgRnFthoSXHuXg+Akk0fX6"
+  "token": "v1d8mGdK7m22dp+Pdsb0C66/YjcWYQZPxDKwOob9IgVt04t+DuC5TvRhrkaU96cHlMgQNeG0XVgqgPGO"
 };
-const cookie = 'EWTEMAJM=ecIEQ/Ow07aAundsJ762KRkNrMoc+MC/rRne6zTw06xQ/GN+WumhGVSJBfzExv9WVlZSm7PfO75EJskn; EWTEMAJM_exp=2023-08-23T10:32:19.542Z; ASP.NET_SessionId=tfoo0lgexvhpbumabjkosqcp; JRLJPMAN=/01aUOf/PeDBTdpbCfdeEXJqDdrCYei9HoHHvtJYDnpDgiEUsTjk4vEMvuXiVIq3xrOrwTOlgiBgpTfO; JRLJPMAN_exp=2023-08-29T05:15:50.429Z; AWSALB=8UdLX1ver2WY3GKmYDrlRDAyPJ6KPV1VY7oIRGaJLQ9WzCXHq+d21sDVUz9u4oE6L3387xaerGbBclKtfon8zCQTuZIEr4+v2+BmV+UAYIFihzo6E2zCSojBl5Le; AWSALBCORS=8UdLX1ver2WY3GKmYDrlRDAyPJ6KPV1VY7oIRGaJLQ9WzCXHq+d21sDVUz9u4oE6L3387xaerGbBclKtfon8zCQTuZIEr4+v2+BmV+UAYIFihzo6E2zCSojBl5Le';
+const cookie = 'ASP.NET_SessionId=rjq1bwy1nauo3xzrrh05h1km; TCXMFTFC=v1d8mGdK7m22dp+Pdsb0C66/YjcWYQZPxDKwOob9IgVt04t+DuC5TvRhrkaU96cHlMgQNeG0XVgqgPGO; TCXMFTFC_exp=2023-09-04T20:21:13.333Z; AWSALB=YrpM0Q8TZAs0pksQ8L1WdpO2QMWaW0N/26z1pBca4GbhLpmrN9L9QzB/Zxxpi0EmQQoqTIKJSb8gX4NbK+ViyzbdBomVUwG5xFhV5hQv/L55uhQZ1+5FRxuavwPC; AWSALBCORS=YrpM0Q8TZAs0pksQ8L1WdpO2QMWaW0N/26z1pBca4GbhLpmrN9L9QzB/Zxxpi0EmQQoqTIKJSb8gX4NbK+ViyzbdBomVUwG5xFhV5hQv/L55uhQZ1+5FRxuavwPC';
 
 const subscriptions: SubscriptionItem[] = [];
-[6374, 5945, 6647, 6647, 16917, 872703].forEach(id => subscriptions.push({ quoteId: id, priceGrouping: "Sampled", action: "subscribe" }));
+[6374].forEach(id => subscriptions.push({ quoteId: id, priceGrouping: "Sampled", action: "subscribe" }));
 
 const allEvents: AllEvents = {};
 
@@ -22,7 +22,12 @@ const api = new Trade(cookie);
 const app = express();
 app.use(express.json());
 
-app.get('/', async (req, res) => {
+function middle(req: any, res: any, next: any) {
+  console.log(allEvents);
+  next();
+}
+
+app.get('/', middle, async (req, res) => {
   const { side, amount } = req.query;
 
   if (!allEvents[6374]) return res.status(200).send({ message: 'No events' });
@@ -41,7 +46,7 @@ app.get('/', async (req, res) => {
 });
 
 
-app.get('/trade', async (req, res) => {
+app.get('/trade', middle, async (req, res) => {
   const { side, amount, orderType, orderStake, limitStake } = req.query;
 
   if (!allEvents[6374]) return res.status(200).send({ message: 'No events' });
@@ -59,7 +64,7 @@ app.get('/trade', async (req, res) => {
   }
 });
 
-app.get('/close', async (req, res) => {
+app.get('/close', middle, async (req, res) => {
   const { positionID, amount, AccountID } = req.query;
 
   if (!allEvents[6374]) return res.status(200).send({ message: 'No events' });
@@ -75,7 +80,7 @@ app.get('/close', async (req, res) => {
   }
 });
 
-app.post('/ammend', async (req, res) => {
+app.post('/ammend', middle, async (req, res) => {
   const { orderType, orderStake, closePositionID, accountID, limitStake, orderId } = req.body;
 
   if (!allEvents[6374]) return res.status(200).send({ message: 'No events' });
