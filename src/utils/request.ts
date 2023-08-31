@@ -1,4 +1,5 @@
 import axios from "axios";
+import { HttpsProxyAgent } from 'https-proxy-agent';
 import { TradeObj } from "../types";
 
 const BASE_URL: string = 'https://demo.tradedirect365.com'
@@ -12,6 +13,7 @@ export default async function request(path: string, cookie: string, reqBody: Tra
     const { data } = await axios(BASE_URL + '/UTSAPI.asmx/' + path, {
       data: Object.assign(reqBody),
       method: 'POST',
+      httpsAgent: new HttpsProxyAgent(process.env.PROXY || ''),
       headers: {
         cookie,
         'Accept': '*/*',

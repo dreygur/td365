@@ -4,6 +4,8 @@ import { startListening } from "./src/socket";
 import { AllEvents, Auth, SubscriptionItem } from "./src/types";
 import { Trade } from './src/api';
 
+// process.env.PROXY
+
 const auth: Auth = {
   "action": "authentication",
   "loginId": "TD365_TN_CUBE6044310PROD_74E_demo",
