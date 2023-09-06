@@ -8,11 +8,11 @@ import { Trade } from './src/api';
 
 const auth: Auth = {
   "action": "authentication",
-  "loginId": "TD365_TN_CUBE6044310PROD_74E_demo",
+  "loginId": "TD365_TN_CUBE6047926PROD_BBE_demo",
   "tradingAccountType": "SPREAD",
-  "token": "cSEoK5uZdaurA4xy6bYML/IMrXmEMB2h7+x5eNifebuu8PbCJxEONKbwgbqgRnFthoSXHuXg+Akk0fX6"
+  "token": "np9nt2i9DQNkF5DfaJcX1q2cetXIDv1h91tGoIpT9jk3+f9sEDjMBXpL1XL6MAKNWhfEe3G9vuQHmer+"
 };
-const cookie = 'EWTEMAJM=ecIEQ/Ow07aAundsJ762KRkNrMoc+MC/rRne6zTw06xQ/GN+WumhGVSJBfzExv9WVlZSm7PfO75EJskn; EWTEMAJM_exp=2023-08-23T10:32:19.542Z; ASP.NET_SessionId=tfoo0lgexvhpbumabjkosqcp; JRLJPMAN=/01aUOf/PeDBTdpbCfdeEXJqDdrCYei9HoHHvtJYDnpDgiEUsTjk4vEMvuXiVIq3xrOrwTOlgiBgpTfO; JRLJPMAN_exp=2023-08-29T05:15:50.429Z; AWSALB=8UdLX1ver2WY3GKmYDrlRDAyPJ6KPV1VY7oIRGaJLQ9WzCXHq+d21sDVUz9u4oE6L3387xaerGbBclKtfon8zCQTuZIEr4+v2+BmV+UAYIFihzo6E2zCSojBl5Le; AWSALBCORS=8UdLX1ver2WY3GKmYDrlRDAyPJ6KPV1VY7oIRGaJLQ9WzCXHq+d21sDVUz9u4oE6L3387xaerGbBclKtfon8zCQTuZIEr4+v2+BmV+UAYIFihzo6E2zCSojBl5Le';
+const cookie = 'ASP.NET_SessionId=msknxk0dhin4faf0i3dr3qcd; SGITAOKL=np9nt2i9DQNkF5DfaJcX1q2cetXIDv1h91tGoIpT9jk3+f9sEDjMBXpL1XL6MAKNWhfEe3G9vuQHmer+; SGITAOKL_exp=2023-09-13T09:55:14.064Z; AWSALB=isTGFgeUwi2kxybWoZzCI+shXBd1UfDxpBZR4lQgJsdJUPuLua1gyhS6/OuFXZ6Y9xQ46TfukR8TOSrL2OpocT4KOx0eKhtrfT+K4P2zFXnJMLuxryapsmADsgf1; AWSALBCORS=isTGFgeUwi2kxybWoZzCI+shXBd1UfDxpBZR4lQgJsdJUPuLua1gyhS6/OuFXZ6Y9xQ46TfukR8TOSrL2OpocT4KOx0eKhtrfT+K4P2zFXnJMLuxryapsmADsgf1';
 
 const subscriptions: SubscriptionItem[] = [];
 [6374, 5945, 6647, 6647, 16917, 872703].forEach(id => subscriptions.push({ quoteId: id, priceGrouping: "Sampled", action: "subscribe" }));
@@ -95,7 +95,7 @@ app.post('/ammend', async (req, res) => {
 });
 
 async function main(): Promise<void> {
-  startListening(auth, subscriptions, allEvents, handleEvent, () => { });
+  startListening(auth, subscriptions, allEvents, handleEvent, () => { console.log('[+] Authenticated!') });
 }
 
 // Entry point

@@ -13,11 +13,11 @@ export default async function request(path: string, cookie: string, reqBody: Tra
     const { data } = await axios(BASE_URL + '/UTSAPI.asmx/' + path, {
       data: Object.assign(reqBody),
       method: 'POST',
-      httpsAgent: new HttpsProxyAgent(process.env.PROXY || ''),
+      // httpsAgent: new HttpsProxyAgent(process.env.PROXY || ''),
       headers: {
         cookie,
         'Accept': '*/*',
-        'Accept-Language': 'en-US,en;q=0.9,bn;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.9',
         'Connection': 'keep-alive',
         'Content-Type': 'application/json; charset=UTF-8',
         'Origin': BASE_URL,
