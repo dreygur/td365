@@ -14,15 +14,15 @@ export async function getOpenPositionDetails(
   cookie: string,
   AccountID: string | number,
   positionID: string | number,
-  quoteID: string | number,
+  quoteID: number,
   allTrades: AllEvents
 ) {
   try {
     const { d: { Direction, MarketName, OpenPrice } } = await request(`/GetOpenPosition?AccountID=${AccountID}`, cookie, { positionID });
     const tradeMode = Direction.toLowerCase() === 'buy';
     const [price, key] = tradeMode
-      ? [allTrades[quoteID].sellPrice, allTrades[quoteID].token]
-      : [allTrades[quoteID].buyPrice, allTrades[quoteID].token];
+      ? [Number(allTrades[quoteID].sellPrice), allTrades[quoteID].token]
+      : [Number(allTrades[quoteID].buyPrice), allTrades[quoteID].token];
 
     let response = {
       tradeMode, price, key,

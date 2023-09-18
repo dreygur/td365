@@ -39,7 +39,7 @@ export type PriceData = {
 
 export type TradeObj = {
   market?: string;
-  marketID?: string | number;
+  marketID?: number;
   orderModeID?: number;
   orderTypeID?: number;
   orderID?: number | string;
@@ -50,7 +50,7 @@ export type TradeObj = {
   orderStake?: number | string;
   positionID?: string | number;
   closePositionID?: number;
-  stake?: string | number;
+  stake?: string;
   tradeType?: string | number;
   tradeMode?: boolean;
   hasClosingOrder?: boolean;
@@ -58,8 +58,8 @@ export type TradeObj = {
   isKaazingFeed?: boolean;
 
   // To be Added Later in api logic
-  quoteID?: string | number;
+  quoteID?: number;
   userAgent?: string;
-  price?: string | number;
+  price?: number;
   key?: string;
 };

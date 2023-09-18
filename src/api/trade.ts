@@ -13,8 +13,8 @@ import { getOpenPositionDetails, getOpenPositionWithOrder } from "./utils";
  */
 export async function closePosition(
   cookie: string,
-  stake: string | number = 1,
-  quoteID: string | number, // Item ID
+  stake: string = "1",
+  quoteID: number, // Item ID
   positionID: string | number,
   accountID: string | number,
   allTrades: AllEvents,
@@ -81,7 +81,7 @@ export async function amend(
   cookie: string,
   orderType: 'stop' | 'trailing' | 'limit' | 'stopLimit' = 'stop',
   orderStake: string | number = 1,
-  quoteID: string | number, // Item ID
+  quoteID: number, // Item ID
   closePositionID: string | number,
   accountID: string | number,
   allTrades: AllEvents,
@@ -160,12 +160,12 @@ export async function amend(
 export async function trade(
   cookie: string,
   tradeMode: 'buy' | 'sell' = 'buy',
-  stake: string | number = 1,
-  quoteID: string | number, // Item ID
+  stake: string = "1",
+  quoteID: number, // Item ID
   allTrades: AllEvents,
   orderObj?: TradeObj,
 ): Promise<any> {
-  const price = allTrades[quoteID][`${tradeMode}Price`];
+  const price = Number(allTrades[quoteID][`${tradeMode}Price`]);
   const defaultOrderObj: TradeObj = {
     stake,
     quoteID,
@@ -207,8 +207,8 @@ export async function tradeExtra(
   cookie: string,
   tradeMode: 'buy' | 'sell' = 'buy',
   orderType: 'stop' | 'trailing' | 'limit' | 'stopLimit' = 'stop',
-  stake: string | number = 1,
-  quoteID: string | number, // Item ID
+  stake: string = "1",
+  quoteID: number, // Item ID
   allTrades: AllEvents,
   orderObj?: TradeObj,
   orderStake?: string | number,
@@ -224,7 +224,7 @@ export async function tradeExtra(
       },
     };
 
-    const [price, key] = [allTrades[quoteID][`${tradeMode}Price`], allTrades[quoteID].token];
+    const [price, key] = [Number(allTrades[quoteID][`${tradeMode}Price`]), allTrades[quoteID].token];
 
     if (orderType === 'stopLimit' && !limitStake) throw new Error('limitStake is required for stopLimit');
     const defaultOrderObj: TradeObj = {

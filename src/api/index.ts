@@ -19,8 +19,8 @@ export class Trade {
    */
   async trade(
     tradeMode: 'buy' | 'sell' = 'buy',
-    stake: string | number = 1,
-    quoteID: string | number, // Item ID
+    stake: string = "1",
+    quoteID: number, // Item ID
     allTrades: AllEvents,
     orderObj?: TradeObj,
   ): Promise<any> {
@@ -31,13 +31,13 @@ export class Trade {
     tradeMode: 'buy' | 'sell' = 'buy',
     orderType: 'stop' | 'trailing' | 'limit' | 'stopLimit' = 'stop',
     stake: string | number = 1,
-    quoteID: string | number, // Item ID
+    quoteID: number, // Item ID
     allTrades: AllEvents,
     orderObj?: TradeObj,
     orderStake?: string | number,
     limitStake?: string | number
   ): Promise<any> {
-    return trade.tradeExtra(this._token, tradeMode, orderType, stake, quoteID, allTrades, orderObj, orderStake, limitStake)
+    return trade.tradeExtra(this._token, tradeMode, orderType, stake.toString(), quoteID, allTrades, orderObj, orderStake, limitStake)
   }
 
   /**
@@ -50,8 +50,8 @@ export class Trade {
    * @returns
    */
   async closePosition(
-    stake: string | number = 1,
-    quoteID: string | number, // Item ID
+    stake: string = "1",
+    quoteID: number, // Item ID
     positionID: string | number,
     accountID: string | number,
     allTrades: AllEvents,
@@ -92,7 +92,7 @@ export class Trade {
   async amend(
     orderType: 'stop' | 'trailing' | 'limit' | 'stopLimit' = 'stop',
     orderStake: string | number = 1,
-    quoteID: string | number, // Item ID
+    quoteID: number, // Item ID
     closePositionID: string | number,
     accountID: string | number,
     allTrades: AllEvents,
